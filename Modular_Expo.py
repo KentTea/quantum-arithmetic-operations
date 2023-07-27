@@ -2,9 +2,6 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_histogram, circuit_drawer
-
-from qiskit.transpiler.passes import Optimize1qGates
-import matplotlib.pyplot as plt
 # endregion Imports
 
 # region SUM
@@ -67,7 +64,6 @@ def Add_Modulo_for_Expo_Modulo(length2):
         circ.swap(Qxx[i],Qn[i])
 
     circ.append(adder_modulo_instruction.inverse(), Qxx[:] + Qy[:] + Qc[:])
-    # get N - (a + b)
     circ.barrier()
 
     circ.x(Qy[length2])
@@ -173,7 +169,7 @@ circ.initialize([1, 0], Qt[0])
 
 #endregion Initialization
 
-#region Instrucation and appending
+#region Appending or applying gates
 
 CCM_instruction = CMM_for_Expo_Modulo(length1, length2, a, x)
 
@@ -188,38 +184,22 @@ for i in range(length1):
     circ.cx(Qx[i],Qctrl[0])
     circ.barrier()
 
-#endregion Instrucation and appending
+#endregion Appending or applying gates
 
 # region Measure
 for i in range(length1):
     circ.measure(Qr[i], Cc[i])
-# for i in range(length1):
-#     circ.measure(Qtemp_expo[i], Cc[i])
 # endregion Measure
 
-# region run
+# region Run
 
 backend = Aer.get_backend('qasm_simulator')
 result = execute(circ, backend, shots=1).result()
 counts = result.get_counts()
 print(counts)
 
-# endregion run
+# endregion Run
 
-# region Export_images
-
-# ascii_diagram = circ.draw(output='text')
-# fig, ax = plt.subplots(figsize=(8, 6))
-# ax.text(0.1, 0.1, ascii_diagram, fontsize=10, va='top', ha='left', family='monospace')
-# ax.axis('off')
-# plt.savefig('Expo_Modulo_diagram', bbox_inches='tight')
+# region Export images
 circ.draw(output='mpl', filename='Expo_Modulo_diagram.png')
-# endregion Export_images
-
-
-
-# ADD_for_Expo_Modulo(length2).draw(output='mpl', filename='ADD_for_Expo_Modulo')
-# Add_Modulo_for_Expo_Modulo(length2).draw(output='mpl', filename='Add_Modulo_for_Expo_Modulo')
-# CMM_for_Expo_Modulo(length1, length2, a, x).draw(output='mpl', filename='CMM_for_Expo_Modulo')
-# print(length1)
-# print(length2)
+# endregion Export images
